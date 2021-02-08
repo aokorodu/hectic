@@ -37,7 +37,7 @@ export class Ball {
 
   setBounds(maxX, maxY) {
     this.maxX = maxX - this.r
-    this.maxY = maxY - this.r;
+    this.maxY = maxY + this.r;
   }
 
   buildCircle(svg) {
@@ -55,6 +55,18 @@ export class Ball {
 
   randomColor() {
     return Math.round(Math.random() * 255)
+  }
+
+  repaint(n){
+    const duration = n.duration;
+    const num = n.midi; // 1-100;
+    const instrNum = n.instrumentNumber
+    this.location.x = 400 + instrNum*2;
+    
+    this.circle.setAttribute("fill", `hsl(${num}, 100%, 59%)`);
+    this.r = duration/2727 * 100;
+    if(this.r < 10) this.r = 10;
+    this.circle.setAttribute("r", this.r);
   }
 
   move(newForce) {
@@ -127,8 +139,8 @@ export class Ball {
   }
 
   flow() {
-    if (this.location.y > this.maxY) {
-      this.location.y = this.maxY;
+    if (this.location.y > this.maxY + this.r) {
+      this.location.y = this.maxY + this.r;
       //this.location.x = this.maxX / 2;
       this.velocity = new PVector(0, 0);
 

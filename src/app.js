@@ -9,7 +9,7 @@ export class App {
     this.h = h;
     this.count = 0;
     this.particleSVG = document.getElementById("particles");
-    this.totalParticles = 500;
+    this.totalParticles = 100;
     this.particles = [];
     this.zeroG = new PVector(0, 0);
     this.oneG = new PVector(0, 1);
@@ -18,26 +18,30 @@ export class App {
     this.gravity = this.oneG;
 
     this.tracks = [];
-    this.notes = [];
-    
+    this.notes = [];    
   }
-
-  
 
   init() {
     this.initTracks();
     this.initNotes();
     this.buildParticles();
     this.draw();
-    this.launchParticle(1000);
-    this.launchParticle(2000);
-    this.launchParticle(3000);
+    this.launchParticles();
+
+    
     // for (const button of this.navButtons) {
     //   button.addEventListener("click", (e) => {
     //     this.changeMode(button.getValue());
     //     this.activateSelectedButton(button);
     //   })
     // }
+  }
+
+  launchParticles(){
+    for(let note of this.notes){
+      const t = note.time;
+      this.launchParticle(note);
+    }
   }
 
   // activateSelectedButton(target) {
@@ -93,10 +97,11 @@ export class App {
   initNotes(){
     for(const track of this.tracks){
       for(const note of track.notes){
-        this.notes.push(new Note(track.instrument, track.instrumentNumber, note.name, note.midi, note.time, note.velocity, note.duration));
+        const n = new Note(track.instrument, track.instrumentNumber, note.name, note.midi, note.time, note.velocity, note.duration);
+        if(n.duration > 136) console.log('duration', n.duration);
+        this.notes.push(n);
       }
     }
-    console.log(this.notes.length)
   }
 
   buildParticles() {
@@ -115,9 +120,11 @@ export class App {
     })
   }
 
-  launchParticle(t){
+  launchParticle(note){
+    const t = note.time;
     setTimeout(() => {
       const b = this.getParticle();
+      b.repaint(note);
       b.move(new PVector(0, -40));
     }, t);
   }
