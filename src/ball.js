@@ -12,7 +12,7 @@ export class Ball {
     this.cy = this.location.y;
     this.r = 10 + Math.ceil(Math.random() * 10);
     this.defaultR = this.r;
-    this.opacity = this.r / this.r/2;
+    this.opacity = .6;
     this.circle;
     this.fill = "#ffffff";
     this.stroke = "#ffffff";
@@ -57,21 +57,52 @@ export class Ball {
     return Math.round(Math.random() * 255)
   }
 
-  repaint(n){
-    const duration = n.duration;
-    const num = n.midi; // 1-100;
-    const instrNum = n.instrumentNumber
-    this.location.x = 400 + instrNum*2;
+  // repaint(n){
+  //   const duration = n.duration;
+  //   const num = n.midi; // 1-100;
+  //   const instrNum = n.instrumentNumber;
+
+  //   if(n.instrument == "xylophone"){
+  //     this.location.x = 500;
+  //     this.circle.setAttribute("fill", "#ffffff");
+  //     this.velocity.x = Math.random() * 4 - 2;
+  //     this.r = 15;
+  //     this.circle.setAttribute("fill-opacity", 1);
+  //   } else {
+  //     this.location.x = 400 + instrNum*2;
+  //     this.circle.setAttribute("fill", `hsl(${num}, 100%, 59%)`);
+  //     this.velocity.x = 0;
+  //     this.r = duration/1300 * 100;
+  //     this.circle.setAttribute("fill-opacity", this.opacity);
+  //     if(this.r < 30) this.r = 30;
+  //   }
     
-    this.circle.setAttribute("fill", `hsl(${num}, 100%, 59%)`);
-    this.r = duration/2727 * 100;
-    if(this.r < 10) this.r = 10;
+  //   this.circle.setAttribute("r", this.r);
+  // }
+
+  repaint(n){
+    const num = n.midi; // 1-100;
+    const instrNum = n.instrumentNumber;
+
+    if(n.instrument == "xylophone"){
+      this.circle.setAttribute("fill", "#38DBFB");
+      this.location.x = this.maxX/2 + n.midi;
+      this.velocity.y = -3;
+      this.circle.setAttribute("fill-opacity", .7);
+    } else {
+      this.location.x = this.maxX/12 * n.instrumentPosition + (n.midi*5);
+      this.circle.setAttribute("fill", `hsl(${num}, 100%, 59%)`);
+      this.velocity.x = 0;
+      this.circle.setAttribute("fill-opacity", this.opacity);
+      if(this.r < 30) this.r = 30;
+    }
+    
+    this.r = 15;
     this.circle.setAttribute("r", this.r);
   }
 
   move(newForce) {
     this.active = true;
-
     this.accel.add(newForce);
     this.velocity.add(this.accel);
     this.location.add(this.velocity);

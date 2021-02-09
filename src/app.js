@@ -2,6 +2,7 @@ import { Ball } from './ball';
 import { PVector } from './pvector';
 import { allnotes } from './notes';
 import { Note } from './note';
+import {Howl, Howler} from 'howler';
 
 export class App {
   constructor(w, h) {
@@ -14,11 +15,13 @@ export class App {
     this.zeroG = new PVector(0, 0);
     this.oneG = new PVector(0, 1);
     this.twoG = new PVector(0, 2);
-    this.lowG = new PVector(0, .5);
-    this.gravity = this.oneG;
+    this.lowG = new PVector(0, .1);
+    this.gravity = this.lowG;
 
     this.tracks = [];
     this.notes = [];    
+
+    this.startButton = document.querySelector("#start-button");
   }
 
   init() {
@@ -26,7 +29,7 @@ export class App {
     this.initNotes();
     this.buildParticles();
     this.draw();
-    this.launchParticles();
+    this.initHowler();
 
     
     // for (const button of this.navButtons) {
@@ -35,6 +38,23 @@ export class App {
     //     this.activateSelectedButton(button);
     //   })
     // }
+  }
+
+  initHowler(){
+    const sound = new Howl({
+      src: ['./audio/HECTIC_KAI_SONG.MP3'],
+      onplay: ()=>{
+        console.log('song playing')
+        this.launchParticles();
+      }
+    });
+
+    this.startButton.addEventListener("click", ()=>{
+      sound.play();
+      
+    })
+     
+    
   }
 
   launchParticles(){
@@ -95,13 +115,17 @@ export class App {
   }
 
   initNotes(){
+    const instruments = [];
     for(const track of this.tracks){
       for(const note of track.notes){
+        instruments.push(track.instrument);
         const n = new Note(track.instrument, track.instrumentNumber, note.name, note.midi, note.time, note.velocity, note.duration);
-        if(n.duration > 136) console.log('duration', n.duration);
         this.notes.push(n);
       }
     }
+    const set = new Set(instruments)
+    console.log('instruments: ', set);
+    console.log('notes: ', this.notes)
   }
 
   buildParticles() {
@@ -124,8 +148,9 @@ export class App {
     const t = note.time;
     setTimeout(() => {
       const b = this.getParticle();
+      if(b == undefined) return;
       b.repaint(note);
-      b.move(new PVector(0, -40));
+      b.move(new PVector(0, -10));
     }, t);
   }
 
