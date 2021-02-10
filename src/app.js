@@ -2,7 +2,9 @@ import { Ball } from './ball';
 import { PVector } from './pvector';
 import { allnotes } from './notes';
 import { Note } from './note';
-import {Howl, Howler} from 'howler';
+import { Track } from './track';
+import { Howl, Howler } from 'howler';
+
 
 export class App {
   constructor(w, h) {
@@ -19,7 +21,7 @@ export class App {
     this.gravity = this.lowG;
 
     this.tracks = [];
-    this.notes = [];    
+    this.notes = [];
 
     this.startButton = document.querySelector("#start-button");
   }
@@ -28,10 +30,15 @@ export class App {
     this.initTracks();
     this.initNotes();
     this.buildParticles();
+
+
+
+
+    //
     this.draw();
     this.initHowler();
 
-    
+
     // for (const button of this.navButtons) {
     //   button.addEventListener("click", (e) => {
     //     this.changeMode(button.getValue());
@@ -40,25 +47,36 @@ export class App {
     // }
   }
 
-  initHowler(){
+  initTracks() {
+    this.tracks = allnotes.tracks;
+    const num = this.tracks.length;
+    for (let [i, trackData] of this.tracks.entries()) {
+      const incr = this.h / num;
+      const track = new Track(0, i * incr, this.w, this.h / num, this.particleSVG, trackData)
+      track.init();
+    }
+
+  }
+
+  initHowler() {
     const sound = new Howl({
       src: ['./audio/HECTIC_KAI_SONG.MP3'],
-      onplay: ()=>{
+      onplay: () => {
         console.log('song playing')
         this.launchParticles();
       }
     });
 
-    this.startButton.addEventListener("click", ()=>{
+    this.startButton.addEventListener("click", () => {
       sound.play();
-      
+
     })
-     
-    
+
+
   }
 
-  launchParticles(){
-    for(let note of this.notes){
+  launchParticles() {
+    for (let note of this.notes) {
       const t = note.time;
       this.launchParticle(note);
     }
@@ -110,14 +128,12 @@ export class App {
   //   }
   // }
 
-  initTracks(){
-    this.tracks = allnotes.tracks;
-  }
 
-  initNotes(){
+
+  initNotes() {
     const instruments = [];
-    for(const track of this.tracks){
-      for(const note of track.notes){
+    for (const track of this.tracks) {
+      for (const note of track.notes) {
         instruments.push(track.instrument);
         const n = new Note(track.instrument, track.instrumentNumber, note.name, note.midi, note.time, note.velocity, note.duration);
         this.notes.push(n);
@@ -125,12 +141,11 @@ export class App {
     }
     const set = new Set(instruments)
     console.log('instruments: ', set);
-    console.log('notes: ', this.notes)
   }
 
   buildParticles() {
     for (let i = 0; i < this.totalParticles; i++) {
-      const x = this.w/2;
+      const x = this.w / 2;
       const y = this.h;
       const b = new Ball(x, y, 10);
       b.init(this.particleSVG, this.w, this.h);
@@ -138,23 +153,23 @@ export class App {
     }
   }
 
-  getParticle(){
-    return this.particles.find((particle)=>{
+  getParticle() {
+    return this.particles.find((particle) => {
       return !particle.active;
     })
   }
 
-  launchParticle(note){
+  launchParticle(note) {
     const t = note.time;
     setTimeout(() => {
       const b = this.getParticle();
-      if(b == undefined) return;
+      if (b == undefined) return;
       b.repaint(note);
       b.move(new PVector(0, -10));
     }, t);
   }
 
-  
+
 
   draw() {
     for (const particle of this.particles) {
