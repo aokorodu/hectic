@@ -20,6 +20,7 @@ export class App {
     this.lowG = new PVector(0, .1);
     this.gravity = this.lowG;
 
+    this.trackData = [];
     this.tracks = [];
     this.notes = [];
 
@@ -48,12 +49,14 @@ export class App {
   }
 
   initTracks() {
-    this.tracks = allnotes.tracks;
-    const num = this.tracks.length;
-    for (let [i, trackData] of this.tracks.entries()) {
+    this.trackData = allnotes.tracks;
+    console.log('tracks length: ', this.trackData.length)
+    const num = this.trackData.length;
+    for (let [i, trackData] of this.trackData.entries()) {
       const incr = this.h / num;
       const track = new Track(0, i * incr, this.w, this.h / num, this.particleSVG, trackData)
       track.init();
+      this.tracks.push(track);
     }
 
   }
@@ -78,7 +81,11 @@ export class App {
   launchParticles() {
     for (let note of this.notes) {
       const t = note.time;
-      this.launchParticle(note);
+      //this.launchParticle(note);
+    }
+
+    for(let track of this.tracks){
+      track.playNotes();
     }
   }
 
@@ -132,7 +139,7 @@ export class App {
 
   initNotes() {
     const instruments = [];
-    for (const track of this.tracks) {
+    for (const track of this.trackData) {
       for (const note of track.notes) {
         instruments.push(track.instrument);
         const n = new Note(track.instrument, track.instrumentNumber, note.name, note.midi, note.time, note.velocity, note.duration);

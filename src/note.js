@@ -10,9 +10,7 @@ export class Note {
     this.duration = Math.round(duration * 1000);
     
     this.noteNumber = this.getNoteNumber(this.name.slice(0, -1));
-
-    this.octave = this.name.split("").pop();
-    console.log(this.name, '#:', this.noteNumber, 'octave: ', this.octave)
+    this.octave = parseInt(this.name.split("").pop());
   }
 
   getNoteNumber(str) {

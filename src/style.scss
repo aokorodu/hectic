@@ -24,3 +24,25 @@ svg {
   width: 100px;
   height: 30px;
 }
+
+.key {
+  fill: #eaeaea;
+  fill-opacity: 0;
+}
+
+.on {
+  fill-opacity: 1;
+}
+
+.key-strike {
+  animation: fade-down 500ms ease-out;
+}
+
+@keyframes fade-down {
+  from{
+    fill-opacity: 1;
+  }
+  to{
+    fill-opacity: 0;
+  }
+}

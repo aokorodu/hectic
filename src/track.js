@@ -1,4 +1,5 @@
 import { Octave} from './octave';
+import { Note } from './note';
 
 export class Track {
   constructor(x, y, w, h, svg, data){
@@ -12,16 +13,34 @@ export class Track {
     this.ns = "http://www.w3.org/2000/svg";
 
     this.octaves = [];
-    this.totalOctaves = 6;
+    this.totalOctaves = 7;
 
     this.data = data;
-    console.log(this.data.notes)
+    this.instrument = null;
+
+    this.trackNumber = null;
+    this.notes = [];
   }
 
   init(){
+    this.initProps();
     this.initGroup();
     this.drawOutline();
+    this.initNotes();
     this.initOctaves();
+  }
+
+  initProps(){
+    this.instrument = this.data.instrument;
+    this.trackNumber = this.data.channelNumber;
+  }
+
+  initNotes() {
+      for (const note of this.data.notes) {
+        const n = new Note(this.instrument, this.trackNumber, note.name, note.midi, note.time, note.velocity, note.duration);
+        this.notes.push(n);
+      }
+      console.log(`total notes for ${this.instrument}: ${this.notes.length}`)
   }
 
   initGroup(){
@@ -43,11 +62,30 @@ export class Track {
   initOctaves(){
     const incr = this.w/this.totalOctaves;
     for(let i = 0; i < this.totalOctaves; i++){
-      console.log(i);
       const x = i * incr;
       const octave = new Octave(x, incr, this.h, this.group);
       octave.init();
       this.octaves.push(octave)
     }
+  }
+
+  playNote(octave, noteNum, noteDuration){
+    this.octaves[octave].playNote(noteNum, noteDuration)
+  }
+
+  playNotes(){
+    console.log('PLAY NOTES')
+    for(let [index, note] of this.notes.entries()){
+      
+      const t = note.time;
+      const octave = note.octave;
+      const noteNumber = note.noteNumber;
+      const duration = note.duration/500;
+      setTimeout(() => {
+        console.log(octave, noteNumber)
+        this.playNote(octave, noteNumber, duration)
+      }, t);
+    }
+    
   }
 }

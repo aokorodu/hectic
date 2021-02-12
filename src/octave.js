@@ -1,3 +1,5 @@
+import { gsap } from 'gsap';
+
 export class Octave{
   constructor(x, w, h, holder){
     this.x = x;
@@ -43,13 +45,26 @@ export class Octave{
 
   drawNote(x){
     const note = document.createElementNS(this.ns, "rect");
+    note.setAttribute("class", "key")
     note.setAttribute("x", 0);
     note.setAttribute("y", 0);
     note.setAttribute("width", this.noteWidth);
     note.setAttribute("height", this.h);
     note.setAttribute("stroke", '#ffffff');
+    note.setAttribute("stroke-opacity", ".1")
     note.setAttribute("transform", `translate(${x}, 0)`);
+    //note.setAttribute("style", "fill:#ffffff; fill-opacity:0");
     this.group.appendChild(note);
     return note;
+  }
+
+  playNote(num, dur){
+    const noteDuration = dur < .3 ? .3 : dur;
+    const note = this.notes[num];
+    gsap.fromTo(note, {fillOpacity:1}, {fillOpacity:0, duration:noteDuration})
+    //note.setAttribute("style", "fill:#ffffff; fill-opacity:1; animation-name: fade-down; animation-duration: 50ms; animation-fill-mode: forwards");
+  //   note.classList.remove('key-strike');
+  //   if(note == null || note == undefined) return;
+  //  note.classList.add('key-strike');
   }
 }
