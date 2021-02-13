@@ -86,18 +86,18 @@ export class Ball {
 
     if(n.instrument == "xylophone"){
       this.circle.setAttribute("fill", "#38DBFB");
-      this.location.x = this.maxX/2 + n.midi;
+      this.location.x = this.maxX-50;
       this.velocity.y = -3;
-      this.circle.setAttribute("fill-opacity", .7);
+      this.circle.setAttribute("fill-opacity", .3);
     } else {
-      this.location.x = this.maxX/12 * n.instrumentPosition + (n.midi*5);
+      this.location.x = this.maxX-50;
       this.circle.setAttribute("fill", `hsl(${num}, 100%, 59%)`);
-      this.velocity.x = 0;
+      this.velocity.x = Math.random() * 4 - 2;
       this.circle.setAttribute("fill-opacity", this.opacity);
       if(this.r < 30) this.r = 30;
     }
     
-    this.r = 15;
+    this.r = 5;
     this.circle.setAttribute("r", this.r);
   }
 

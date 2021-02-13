@@ -17,7 +17,6 @@ export class Track {
 
     this.data = data;
     this.instrument = null;
-
     this.trackNumber = null;
     this.notes = [];
   }
@@ -25,12 +24,13 @@ export class Track {
   init(){
     this.initProps();
     this.initGroup();
-    this.drawOutline();
+    //this.drawOutline();
     this.initNotes();
     this.initOctaves();
   }
 
   initProps(){
+    console.log('this.instrument: ', this.data.instrument)
     this.instrument = this.data.instrument;
     this.trackNumber = this.data.channelNumber;
   }
@@ -43,10 +43,23 @@ export class Track {
       console.log(`total notes for ${this.instrument}: ${this.notes.length}`)
   }
 
+  addNotes(data){
+    for (const note of data.notes) {
+      const n = new Note(this.instrument, this.trackNumber, note.name, note.midi, note.time, note.velocity, note.duration);
+      this.notes.push(n);
+    }
+  }
+
   initGroup(){
     this.group = document.createElementNS(this.ns, "g");
     this.group.setAttribute("transform", `translate(${this.x}, ${this.y})`);
     this.svg.appendChild(this.group);
+  }
+
+  positionTrack(x, y){
+    this.x = x;
+    this.y = y;
+    this.group.setAttribute("transform", `translate(${this.x}, ${this.y})`);
   }
 
   drawOutline(){
@@ -62,8 +75,8 @@ export class Track {
   initOctaves(){
     const incr = this.w/this.totalOctaves;
     for(let i = 0; i < this.totalOctaves; i++){
-      const x = i * incr;
-      const octave = new Octave(x, incr, this.h, this.group);
+      const x = i * this.h;
+      const octave = new Octave(x, this.h, this.h, this.group);
       octave.init();
       this.octaves.push(octave)
     }
@@ -80,9 +93,9 @@ export class Track {
       const t = note.time;
       const octave = note.octave;
       const noteNumber = note.noteNumber;
-      const duration = note.duration/500;
+      const duration = note.duration/100;
       setTimeout(() => {
-        console.log(octave, noteNumber)
+        if(note.instrument == "standard kit") console.log('standard kit');
         this.playNote(octave, noteNumber, duration)
       }, t);
     }

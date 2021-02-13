@@ -10,7 +10,7 @@ export class Octave{
     this.outline = null;
     this.ns = "http://www.w3.org/2000/svg";
     this.totalNotes = 12;
-    this.noteWidth = this.w/this.totalNotes;
+    this.noteWidth = (this.w - this.h)/this.totalNotes;
     this.notes = [];
   }
 
@@ -26,42 +26,87 @@ export class Octave{
     this.holder.appendChild(this.group);
   }
 
+  // drawOutline(){
+  //   this.outline = document.createElementNS(this.ns, "rect");
+  //   this.outline.setAttribute("x", 0);
+  //   this.outline.setAttribute("y", 0);
+  //   this.outline.setAttribute("width", this.w);
+  //   this.outline.setAttribute("height", this.h);
+  //   this.outline.setAttribute("stroke", `hsl(${Math.round(Math.random()*255)}, 100%, 59%)`);
+  //   this.group.appendChild(this.outline);
+  // }
+
   drawOutline(){
-    this.outline = document.createElementNS(this.ns, "rect");
-    this.outline.setAttribute("x", 0);
-    this.outline.setAttribute("y", 0);
-    this.outline.setAttribute("width", this.w);
-    this.outline.setAttribute("height", this.h);
-    this.outline.setAttribute("stroke", '#ffffff');
+    this.outline = document.createElementNS(this.ns, "ellipse");
+    this.outline.setAttribute("cx", this.w/2);
+    this.outline.setAttribute("cy", this.h/2);
+    this.outline.setAttribute("rx", this.h/2);
+    this.outline.setAttribute("ry", this.h/2);
+    this.outline.setAttribute("stroke", `hsl(${Math.round(Math.random()*255)}, 100%, 59%)`);
     this.group.appendChild(this.outline);
   }
 
   drawAllNotes(){
+    const incr = this.h/this.totalNotes
     for(let i = 0; i < this.totalNotes; i++){
-      const newNote = this.drawNote(i * this.noteWidth);
+      // const newNote = this.drawNote(this.w - (i*incr), this.h - (i*incr));
+      const newNote = this.drawNote(this.w/2 - (i*incr));
       this.notes.push(newNote);
     }
   }
 
-  drawNote(x){
-    const note = document.createElementNS(this.ns, "rect");
+  // drawNote(x){
+  //   const note = document.createElementNS(this.ns, "rect");
+  //   note.setAttribute("class", "key")
+  //   note.setAttribute("x", 0);
+  //   note.setAttribute("y", 0);
+  //   note.setAttribute("width", this.noteWidth*3);
+  //   note.setAttribute("height", this.h);
+  //   note.setAttribute("stroke", '#ffffff');
+  //   note.setAttribute("stroke-opacity", "0")
+  //   note.setAttribute("transform", `translate(${x}, 0)`);
+  //   this.group.appendChild(note);
+  //   return note;
+  // }
+
+  drawNote(r){
+    const note = document.createElementNS(this.ns, "circle");
     note.setAttribute("class", "key")
-    note.setAttribute("x", 0);
-    note.setAttribute("y", 0);
-    note.setAttribute("width", this.noteWidth);
-    note.setAttribute("height", this.h);
+    note.setAttribute("cx", this.w/2);
+    note.setAttribute("cy", this.h/2);
+    note.setAttribute("r", r);
+    //note.setAttribute("fill", `#ffffff`);
+    note.setAttribute("fill", `hsl(${r/this.h * 255}, 100%, 59%)`);
     note.setAttribute("stroke", '#ffffff');
-    note.setAttribute("stroke-opacity", ".1")
-    note.setAttribute("transform", `translate(${x}, 0)`);
-    //note.setAttribute("style", "fill:#ffffff; fill-opacity:0");
+    note.setAttribute("stroke-opacity", ".1");
+    //note.setAttribute("transform", `translate(${x}, 0)`);
     this.group.appendChild(note);
     return note;
   }
 
+  // drawNote(w, h){
+  //   const note = document.createElementNS(this.ns, "rect");
+  //   note.setAttribute("class", "key")
+  //   note.setAttribute("x", 0);
+  //   note.setAttribute("y", 0);
+  //   note.setAttribute("width", w);
+  //   note.setAttribute("height", h);
+  //   note.setAttribute("fill", `hsl(${h/this.h * 255}, 100%, 59%)`);
+  //   note.setAttribute("stroke", '#ffffff');
+  //   note.setAttribute("stroke-opacity", ".1");
+  //   note.setAttribute("transform", `translate(${(this.w - w)/2}, ${(this.h - h)/2})`);
+  //   this.group.appendChild(note);
+  //   return note;
+  // }
+
   playNote(num, dur){
+    const col = `hsl(${Math.round(Math.random()*255)}, 100%, 59%)`
+    this.outline.setAttribute("stroke", col);
+    this.outline.setAttribute("fill", col);
     const noteDuration = dur < .3 ? .3 : dur;
     const note = this.notes[num];
-    gsap.fromTo(note, {fillOpacity:1}, {fillOpacity:0, duration:noteDuration})
+    gsap.fromTo(note, {fillOpacity:.75}, {fillOpacity:0, duration:noteDuration})
+    gsap.fromTo(this.outline, {fillOpacity:.33}, {fillOpacity:0, duration:noteDuration/3})
     //note.setAttribute("style", "fill:#ffffff; fill-opacity:1; animation-name: fade-down; animation-duration: 50ms; animation-fill-mode: forwards");
   //   note.classList.remove('key-strike');
   //   if(note == null || note == undefined) return;
